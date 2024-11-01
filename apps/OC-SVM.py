@@ -7,10 +7,10 @@ from skimage.feature import hog
 from skimage import exposure
 from sklearn.svm import OneClassSVM
 from PIL import Image
+import pickle
 
-# Load trained One-Class SVM model
-model_path = 'OC_svm_model.pkl'
-with open(model_path, 'rb') as model_file:
+# Load the model
+with open('OC_svm_model.pkl', 'rb') as model_file:
     model = pickle.load(model_file)
 
 # Function to extract HOG features from an image
