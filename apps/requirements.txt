@@ -1,0 +1,6 @@
+numpy
+Pillow
+streamlit
+Keras==2.15.0
+tensorflow==2.15.0
+opencv-python-headless
