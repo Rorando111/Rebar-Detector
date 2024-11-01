@@ -9,7 +9,7 @@ from sklearn.svm import OneClassSVM
 from PIL import Image
 
 # Load the model
-with open('OC_svm_model.pkl', 'rb') as model_file:
+with open('Rebar-Detector/apps/OC_svm_model.pkl', 'rb') as model_file:
     model = pickle.load(model_file)
 
 # Function to extract HOG features from an image
