@@ -2,14 +2,15 @@ import streamlit as st
 import numpy as np
 import cv2
 import os
-import pickle
+import pickle  # Keep using pickle for loading the model
 from skimage.feature import hog
 from skimage import exposure
 from sklearn.svm import OneClassSVM
 from PIL import Image
 
-# Load the model
-with open('OC_svm_model.pkl', 'rb') as model_file:
+# Load the model using pickle
+model_path = 'OC_svm_model.pkl'  # Ensure this path is correct
+with open(model_path, 'rb') as model_file:
     model = pickle.load(model_file)
 
 # Function to extract HOG features from an image
@@ -54,4 +55,5 @@ def run():
             else:
                 st.success(f"The object in the image is classified as: {result}")
 
-run()
+if __name__ == "__main__":
+    run()
