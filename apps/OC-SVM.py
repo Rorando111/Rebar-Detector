@@ -7,7 +7,6 @@ from skimage.feature import hog
 from skimage import exposure
 from sklearn.svm import OneClassSVM
 from PIL import Image
-import pickle
 
 # Load the model
 with open('OC_svm_model.pkl', 'rb') as model_file:
