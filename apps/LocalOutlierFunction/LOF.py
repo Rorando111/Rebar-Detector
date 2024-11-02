@@ -15,7 +15,7 @@ def extract_hog_features(image):
     return features
 
 # Load the trained model
-model_filename = 'path/to/your/lof_model.pkl'  # Update with your model path
+model_filename = 'apps/LocalOutlierFunction/lof_model.pkl'  # Update with your model path
 with open(model_filename, 'rb') as model_file:
     lof_model = pickle.load(model_file)
 
