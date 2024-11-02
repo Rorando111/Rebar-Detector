@@ -1,46 +1,55 @@
 import streamlit as st
 import numpy as np
 import cv2
-import pickle
+import os
+import pickle  # Keep using pickle for loading the model
 from skimage.feature import hog
+from skimage import exposure
+from sklearn.svm import OneClassSVM
 from PIL import Image
 
-# Load the KNN model using pickle
-model_path = 'apps/LocalOutlierFunction/lof_model.pkl'
+# Load the model using pickle
+model_path = 'apps/OC-SVM/OC_svm_model (1).pkl'  # Ensure this path is correct
 with open(model_path, 'rb') as model_file:
     model = pickle.load(model_file)
 
 # Function to extract HOG features from an image
 def extract_hog_features(image):
-    image = cv2.resize(image, (128, 64))  # Ensure the same dimensions used during training
+    image = cv2.resize(image, (128, 64))
     gray_image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-    features, _ = hog(gray_image, orientations=9, pixels_per_cell=(8, 8),
-                      cells_per_block=(2, 2), visualize=True)
+    features, hog_image = hog(gray_image, orientations=9, pixels_per_cell=(8, 8),
+                              cells_per_block=(2, 2), visualize=True)
+    hog_image = exposure.rescale_intensity(hog_image, in_range=(0, 10))
     return features
 
-# Function to process and predict
-def process_and_predict(img, model):
-    image = np.array(img)
+# Function to process and predict if an image is 'rebar' or 'non-rebar'
+def processed_img(img_path, model):
+    image = cv2.imread(img_path)
     if image is not None:
-        features = extract_hog_features(image).reshape(1, -1)  # Extract HOG features
-        distances, _ = model.kneighbors(features)
-        avg_distance = np.mean(distances)
-
-        # Simple logic to classify based on distance
-        return "rebar" if avg_distance < 0.5 else "non-rebar (outlier)"
+        features = extract_hog_features(image).reshape(1, -1)
+        prediction = model.predict(features)
+        return "rebar" if prediction == 1 else "non-rebar"
     return "unknown"
 
 # Main function for the Streamlit app
 def run():
-    st.title("Rebar Classification System")
+    st.title("Rebar Classification System Using Local Outlier Factor")
 
     img_file = st.file_uploader("Upload an Image for Classification", type=["jpg", "png", "jpeg"])
     if img_file is not None:
         img = Image.open(img_file)
         st.image(img, use_column_width=True)
 
+        # Save uploaded image to a temporary directory
+        upload_dir = './uploaded_images/'
+        if not os.path.exists(upload_dir):
+            os.makedirs(upload_dir)
+        save_image_path = os.path.join(upload_dir, img_file.name)
+        with open(save_image_path, "wb") as f:
+            f.write(img_file.getbuffer())
+
         if st.button("Predict"):
-            result = process_and_predict(img, model)
+            result = processed_img(save_image_path, model)
             if result == "unknown":
                 st.error("Failed to classify the image.")
             else:
