@@ -6,7 +6,7 @@ from skimage.feature import hog
 from PIL import Image
 
 # Load the LOF model using pickle
-model_path = 'apps/OC-LOF/local_outlier_factor_model.pkl'  # Update this path as necessary
+model_path = 'apps/LocalOutlierFunction/lof_model.pkl'  # Update this path as necessary
 with open(model_path, 'rb') as model_file:
     lof_model = pickle.load(model_file)
 
