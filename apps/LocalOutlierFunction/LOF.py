@@ -27,7 +27,7 @@ def processed_img(image, model):
     features = extract_hog_features(image).reshape(1, -1)
     
     # Use the model to predict
-    prediction = model.predict(features)  # Use the fitted model to predict
+    prediction = model.fit_predict(features)  # Use the fitted model to predict
     return "rebar" if prediction[0] == 1 else "non-rebar (outlier)"
 
 # Main function for the Streamlit app
