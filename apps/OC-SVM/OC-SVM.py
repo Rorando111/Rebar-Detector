@@ -9,7 +9,7 @@ from sklearn.svm import OneClassSVM
 from PIL import Image
 
 # Load the model using pickle
-model_path = 'apps/OC-SVM/svm_model.pkl'  # Ensure this path is correct
+model_path = 'apps/OC-SVM/OC_svm_model (1).pkl'  # Ensure this path is correct
 with open(model_path, 'rb') as model_file:
     model = pickle.load(model_file)
 
