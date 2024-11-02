@@ -5,7 +5,7 @@ import os
 import pickle  # Keep using pickle for loading the model
 from skimage.feature import hog
 from skimage import exposure
-from sklearn.svm import OneClassSVM
+from sklearn.neighbors import LocalOutlierFactor
 from PIL import Image
 
 # Load the model using pickle
@@ -27,8 +27,11 @@ def processed_img(img_path, model):
     image = cv2.imread(img_path)
     if image is not None:
         features = extract_hog_features(image).reshape(1, -1)
-        prediction = model.predict(features)
-        return "rebar" if prediction == 1 else "non-rebar"
+        
+        # Use the model to predict
+        prediction = model.fit_predict(features)  # Fit and predict in one step
+        # Classify based on the prediction
+        return "rebar" if prediction[0] == 1 else "non-rebar (outlier)"
     return "unknown"
 
 # Main function for the Streamlit app
