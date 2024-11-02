@@ -26,7 +26,12 @@ def process_and_predict(img, model):
         prediction = model.predict(features)  # Use the LOF model to predict
 
         # Convert prediction to readable format
-        return "rebar" if prediction[0] == 1 else "non-rebar (outlier)"
+        if prediction[0] == 1:
+            return "rebar"
+        elif prediction[0] == -1:
+            return "non-rebar (outlier)"
+        else:
+            return "unknown"
     return "unknown"
 
 # Main function for the Streamlit app
@@ -36,7 +41,7 @@ def run():
     img_file = st.file_uploader("Upload an Image for Classification", type=["jpg", "png", "jpeg"])
     if img_file is not None:
         img = Image.open(img_file)
-        st.image(img, use_column_width=True)
+        st.image(img, caption='Uploaded Image', use_column_width=True)
 
         if st.button("Predict"):
             result = process_and_predict(img, lof_model)
