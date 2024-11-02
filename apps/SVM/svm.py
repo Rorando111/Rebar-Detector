@@ -4,9 +4,7 @@ import cv2
 import os
 import pickle  # For loading the model
 from skimage.feature import hog
-from skimage import exposure
 from PIL import Image
-from sklearn.decomposition import PCA
 
 # Load the model using pickle with error handling
 model_path = 'apps/SVM/svm_model.pkl'  # Ensure this path is correct
@@ -17,30 +15,16 @@ except Exception as e:
     st.error(f"Failed to load model: {e}")
     model = None
 
-# Load PCA for feature transformation
-pca_model_path = 'apps/SVM/pca_model.pkl'  # Ensure this path is correct
-try:
-    with open(pca_model_path, 'rb') as pca_file:
-        pca = pickle.load(pca_file)
-except Exception as e:
-    st.error(f"Failed to load PCA model: {e}")
-    pca = None
-
 # Function to extract HOG features from an image
 def extract_hog_features(image):
     image = cv2.resize(image, (128, 64))  # Resize to HOG input size
     gray_image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)  # Convert to grayscale
-    features, hog_image = hog(gray_image, orientations=9, pixels_per_cell=(8, 8),
-                              cells_per_block=(2, 2), visualize=True)
-    
+    features = hog(gray_image, orientations=9, pixels_per_cell=(8, 8),
+                   cells_per_block=(2, 2), visualize=False)  # No need for HOG image visualization
+
     # Ensure features are reshaped correctly for the model
     features = features.reshape(1, -1)  # Reshape to (1, number_of_features)
     print("Extracted features shape:", features.shape)  # Debugging line
-    
-    # Reduce dimensionality using PCA
-    if pca is not None:
-        features = pca.transform(features)  # Transform features using PCA
-        print("Transformed features shape:", features.shape)  # Debugging line
     
     return features
 
