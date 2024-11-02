@@ -39,11 +39,7 @@ if uploaded_file is not None:
     prediction = lof_model.fit_predict(features)
 
     # Convert prediction to readable format
-    if prediction == 1:
+    if prediction[0] == 1:  # Corrected to access the prediction array element
         st.write("Prediction: Rebar")
     else:
         st.write("Prediction: Non-Rebar")
-
-# Run the app
-if __name__ == '__main__':
-    run()
