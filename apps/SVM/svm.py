@@ -7,7 +7,7 @@ from skimage.feature import hog
 from PIL import Image
 
 # Load the model using pickle with error handling
-model_path = 'apps/SVM/svm_model.pkl'  # Ensure this path is correct
+model_path = 'apps/SVM/ocsvm_model.pkl'  # Ensure this path is correct
 try:
     with open(model_path, 'rb') as model_file:
         model = pickle.load(model_file)
