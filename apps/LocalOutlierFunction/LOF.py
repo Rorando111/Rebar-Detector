@@ -1,10 +1,10 @@
-import streamlit as st
-import numpy as np
+import os
 import cv2
-import pickle
+import numpy as np
+import streamlit as st
 from skimage.feature import hog
-from skimage import exposure
-from PIL import Image
+from sklearn.neighbors import LocalOutlierFactor
+import pickle
 
 # Function to extract HOG features from an image
 def extract_hog_features(image):
@@ -14,30 +14,36 @@ def extract_hog_features(image):
                       cells_per_block=(2, 2), visualize=True)
     return features
 
-# Load the Isolation Forest model using pickle
-model_path = 'apps/LocalOutlierFunction/lof_model.pkl'
-with open(model_path, 'rb') as model_file:
-    model = pickle.load(model_file)
+# Load the trained LOF model
+model_filename = '/content/drive/MyDrive/Datasets/models/lof_model.pkl'  # Update this path accordingly
+with open(model_filename, 'rb') as model_file:
+    lof_model = pickle.load(model_file)
 
-# Function to predict using the Isolation Forest model
-def predict_image_isof(image, model):
-    image = np.array(image)
-    features = extract_hog_features(image).reshape(1, -1)
-    pred = model.predict(features)
-    return "rebar" if pred[0] == 1 else "non-rebar"
+# Streamlit app
+st.title("Rebar vs Non-Rebar Detection")
 
-# Main function for the Streamlit app
-def run():
-    st.title("Rebar Classification with Isolation Forest")
+# Upload image
+uploaded_file = st.file_uploader("Choose an image...", type=["jpg", "jpeg", "png", "gif"])
 
-    img_file = st.file_uploader("Upload an Image for Classification", type=["jpg", "png", "jpeg"])
-    if img_file is not None:
-        img = Image.open(img_file)
-        st.image(img, use_column_width=True)
+if uploaded_file is not None:
+    # Read the image
+    image = cv2.imdecode(np.frombuffer(uploaded_file.read(), np.uint8), cv2.IMREAD_COLOR)
+    
+    # Display the image
+    st.image(image, caption='Uploaded Image', use_column_width=True)
 
-        if st.button("Predict"):
-            result = predict_image_isof(img, model)
-            st.success(f"The object in the image is classified as: {result}")
+    # Extract features
+    features = extract_hog_features(image).reshape(1, -1)  # Reshape for a single sample
 
-if __name__ == "__main__":
-    run()
+    # Make prediction
+    prediction = lof_model.fit_predict(features)
+
+    # Convert prediction to readable format
+    if prediction == 1:
+        st.write("Prediction: Rebar")
+    else:
+        st.write("Prediction: Non-Rebar")
+
+# Run the app
+if __name__ == '__main__':
+    st.run()
