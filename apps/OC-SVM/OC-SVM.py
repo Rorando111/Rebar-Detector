@@ -33,7 +33,7 @@ def processed_img(img_path, model):
 
 # Main function for the Streamlit app
 def run():
-    st.title("Rebar Classification System")
+    st.title("Rebar Classification System Using One-Class SVM")
 
     img_file = st.file_uploader("Upload an Image for Classification", type=["jpg", "png", "jpeg"])
     if img_file is not None:
