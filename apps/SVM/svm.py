@@ -5,7 +5,6 @@ import os
 import pickle  # For loading the model
 from skimage.feature import hog
 from skimage import exposure
-from sklearn.decomposition import PCA
 from PIL import Image
 
 # Load the model using pickle with error handling
@@ -17,9 +16,6 @@ except Exception as e:
     st.error(f"Failed to load model: {e}")
     model = None
 
-# Initialize PCA for reducing features to 512 components
-pca = PCA(n_components=512)
-
 # Function to extract HOG features from an image
 def extract_hog_features(image):
     image = cv2.resize(image, (128, 64))  # Resize to HOG input size
@@ -27,12 +23,9 @@ def extract_hog_features(image):
     features, hog_image = hog(gray_image, orientations=9, pixels_per_cell=(8, 8),
                               cells_per_block=(2, 2), visualize=True)
     
-    # Reshape features for PCA
-    features = features.reshape(1, -1)
-    
-    # Apply PCA to reduce to 512 features
-    features = pca.fit_transform(features)
-    print("Extracted features shape after PCA:", features.shape)  # Debugging line
+    # Ensure features are reshaped correctly for the model
+    features = features.reshape(1, -1)  # Reshape to (1, number_of_features)
+    print("Extracted features shape:", features.shape)  # Debugging line
     return features
 
 # Function to process and predict if an image is 'rebar' or 'non-rebar'
