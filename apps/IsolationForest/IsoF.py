@@ -15,7 +15,7 @@ def extract_hog_features(image):
     return features
 
 # Load the Isolation Forest model using pickle
-model_path = '/content/drive/MyDrive/Datasets/models/isolation_forest_model.pkl'
+model_path = 'apps/IsolationForest/isolation_forest_model.pkl'
 with open(model_path, 'rb') as model_file:
     model = pickle.load(model_file)
 
