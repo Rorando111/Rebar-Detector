@@ -23,7 +23,7 @@ def process_and_predict(img, model):
     image = np.array(img)
     if image is not None:
         features = extract_hog_features(image).reshape(1, -1)  # Extract HOG features
-        prediction = model.fit_predict(features)  # Use the LOF model to predict
+        prediction = model.predict(features)  # Use the LOF model to predict
 
         # Convert prediction to readable format
         if prediction[0] == 1:
