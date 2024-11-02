@@ -7,10 +7,14 @@ from skimage.feature import hog
 from skimage import exposure
 from PIL import Image
 
-# Load the model using pickle
+# Load the model using pickle with error handling
 model_path = 'apps/SVM/svm_model.pkl'  # Ensure this path is correct
-with open(model_path, 'rb') as model_file:
-    model = pickle.load(model_file)
+try:
+    with open(model_path, 'rb') as model_file:
+        model = pickle.load(model_file)
+except Exception as e:
+    st.error(f"Failed to load model: {e}")
+    model = None
 
 # Function to extract HOG features from an image
 def extract_hog_features(image):
@@ -26,13 +30,18 @@ def processed_img(img_path, model):
     image = cv2.imread(img_path)
     if image is not None:
         features = extract_hog_features(image).reshape(1, -1)  # Reshape features for prediction
-        prediction = model.predict(features)
-        return "rebar" if prediction == 1 else "non-rebar"
+        print("Extracted features shape:", features.shape)  # Debugging line
+        try:
+            prediction = model.predict(features)
+            return "rebar" if prediction == 1 else "non-rebar"
+        except Exception as e:
+            st.error(f"Prediction error: {e}")
+            return "unknown"
     return "unknown"
 
 # Main function for the Streamlit app
 def run():
-    st.title("Rebar Classification System")
+    st.title("Rebar Classification System using svm")
 
     img_file = st.file_uploader("Upload an Image for Classification", type=["jpg", "png", "jpeg"])
     if img_file is not None:
@@ -48,11 +57,14 @@ def run():
             f.write(img_file.getbuffer())
 
         if st.button("Predict"):
-            result = processed_img(save_image_path, model)
-            if result == "unknown":
-                st.error("Failed to classify the image.")
+            if model is not None:
+                result = processed_img(save_image_path, model)
+                if result == "unknown":
+                    st.error("Failed to classify the image.")
+                else:
+                    st.success(f"The object in the image is classified as: {result}")
             else:
-                st.success(f"The object in the image is classified as: {result}")
+                st.error("Model is not loaded. Please check the model file.")
 
 if __name__ == "__main__":
     run()
