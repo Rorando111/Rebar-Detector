@@ -46,4 +46,4 @@ if uploaded_file is not None:
 
 # Run the app
 if __name__ == '__main__':
-    st.run()
+    run()
