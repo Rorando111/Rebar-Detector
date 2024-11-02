@@ -7,8 +7,13 @@ from PIL import Image
 
 # Load the LOF model using pickle
 model_path = 'apps/LocalOutlierFunction/lof_model.pkl'  # Update this path as necessary
-with open(model_path, 'rb') as model_file:
-    lof_model = pickle.load(model_file)
+
+try:
+    with open(model_path, 'rb') as model_file:
+        lof_model = pickle.load(model_file)
+except FileNotFoundError:
+    st.error(f"Model file not found at {model_path}. Please ensure the model has been trained and saved.")
+    st.stop()
 
 # Function to extract HOG features from an image
 def extract_hog_features(image):
