@@ -8,7 +8,7 @@ from skimage import exposure
 from PIL import Image
 
 # Load the KNN model using pickle
-model_path = '/mount/src/rebar-detector/apps/knn_model.pkl'
+model_path = 'apps/one_class_knn_model.pkl'
 with open(model_path, 'rb') as model_file:
     model = pickle.load(model_file)
 
