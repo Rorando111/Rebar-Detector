@@ -5,6 +5,7 @@ import os
 import pickle  # For loading the model
 from skimage.feature import hog
 from skimage import exposure
+from sklearn.decomposition import PCA
 from PIL import Image
 
 # Load the model using pickle with error handling
@@ -16,21 +17,29 @@ except Exception as e:
     st.error(f"Failed to load model: {e}")
     model = None
 
+# Initialize PCA for reducing features to 512 components
+pca = PCA(n_components=512)
+
 # Function to extract HOG features from an image
 def extract_hog_features(image):
     image = cv2.resize(image, (128, 64))  # Resize to HOG input size
     gray_image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)  # Convert to grayscale
     features, hog_image = hog(gray_image, orientations=9, pixels_per_cell=(8, 8),
                               cells_per_block=(2, 2), visualize=True)
-    hog_image = exposure.rescale_intensity(hog_image, in_range=(0, 10))  # Rescale HOG image for visualization
+    
+    # Reshape features for PCA
+    features = features.reshape(1, -1)
+    
+    # Apply PCA to reduce to 512 features
+    features = pca.fit_transform(features)
+    print("Extracted features shape after PCA:", features.shape)  # Debugging line
     return features
 
 # Function to process and predict if an image is 'rebar' or 'non-rebar'
 def processed_img(img_path, model):
     image = cv2.imread(img_path)
     if image is not None:
-        features = extract_hog_features(image).reshape(1, -1)  # Reshape features for prediction
-        print("Extracted features shape:", features.shape)  # Debugging line
+        features = extract_hog_features(image)  # Extract features
         try:
             prediction = model.predict(features)
             return "rebar" if prediction == 1 else "non-rebar"
@@ -41,7 +50,7 @@ def processed_img(img_path, model):
 
 # Main function for the Streamlit app
 def run():
-    st.title("Rebar Classification System using svm")
+    st.title("Rebar Classification System")
 
     img_file = st.file_uploader("Upload an Image for Classification", type=["jpg", "png", "jpeg"])
     if img_file is not None:
