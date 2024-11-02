@@ -22,16 +22,15 @@ def extract_hog_features(image):
     return features
 
 # Function to process and predict with a threshold
-def processed_img_with_threshold(img_path, model, threshold=0.5):
-    image = cv2.imread(img_path)
+def processed_img_with_threshold(img, model, threshold=0.5):
+    image = np.array(img)
     if image is not None:
         features = extract_hog_features(image).reshape(1, -1)
         distances, _ = model.kneighbors(features)
         avg_distance = np.mean(distances)
 
         if avg_distance < threshold:
-            prediction = model.predict(features)
-            return "rebar" if prediction[0] == 1 else "non-rebar"
+            return "rebar"
         else:
             return "non-rebar (outlier)"
     return "unknown"
@@ -45,18 +44,10 @@ def run():
         img = Image.open(img_file)
         st.image(img, use_column_width=True)
 
-        # Save uploaded image to a temporary directory
-        upload_dir = './uploaded_images/'
-        if not os.path.exists(upload_dir):
-            os.makedirs(upload_dir)
-        save_image_path = os.path.join(upload_dir, img_file.name)
-        with open(save_image_path, "wb") as f:
-            f.write(img_file.getbuffer())
-
         threshold = st.slider("Set classification threshold", min_value=0.1, max_value=2.0, value=0.5, step=0.1)
 
         if st.button("Predict"):
-            result = processed_img_with_threshold(save_image_path, model, threshold)
+            result = processed_img_with_threshold(img, model, threshold)
             if result == "unknown":
                 st.error("Failed to classify the image.")
             else:
