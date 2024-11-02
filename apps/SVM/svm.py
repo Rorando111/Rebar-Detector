@@ -6,6 +6,7 @@ import pickle  # For loading the model
 from skimage.feature import hog
 from skimage import exposure
 from PIL import Image
+from sklearn.decomposition import PCA
 
 # Load the model using pickle with error handling
 model_path = 'apps/SVM/svm_model.pkl'  # Ensure this path is correct
@@ -15,6 +16,15 @@ try:
 except Exception as e:
     st.error(f"Failed to load model: {e}")
     model = None
+
+# Load PCA for feature transformation
+pca_model_path = 'apps/SVM/pca_model.pkl'  # Ensure this path is correct
+try:
+    with open(pca_model_path, 'rb') as pca_file:
+        pca = pickle.load(pca_file)
+except Exception as e:
+    st.error(f"Failed to load PCA model: {e}")
+    pca = None
 
 # Function to extract HOG features from an image
 def extract_hog_features(image):
@@ -26,6 +36,12 @@ def extract_hog_features(image):
     # Ensure features are reshaped correctly for the model
     features = features.reshape(1, -1)  # Reshape to (1, number_of_features)
     print("Extracted features shape:", features.shape)  # Debugging line
+    
+    # Reduce dimensionality using PCA
+    if pca is not None:
+        features = pca.transform(features)  # Transform features using PCA
+        print("Transformed features shape:", features.shape)  # Debugging line
+    
     return features
 
 # Function to process and predict if an image is 'rebar' or 'non-rebar'
@@ -39,6 +55,7 @@ def processed_img(img_path, model):
         except Exception as e:
             st.error(f"Prediction error: {e}")
             return "unknown"
+    st.error("Failed to read image.")
     return "unknown"
 
 # Main function for the Streamlit app
