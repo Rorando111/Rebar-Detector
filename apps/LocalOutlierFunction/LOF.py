@@ -23,16 +23,12 @@ def extract_hog_features(image):
     return features
 
 # Function to process and predict if an image is 'rebar' or 'non-rebar'
-def processed_img(img_path, model):
-    image = cv2.imread(img_path)
-    if image is not None:
-        features = extract_hog_features(image).reshape(1, -1)
-        
-        # Use the model to predict
-        prediction = model.fit_predict(features)  # Fit and predict in one step
-        # Classify based on the prediction
-        return "rebar" if prediction[0] == 1 else "non-rebar (outlier)"
-    return "unknown"
+def processed_img(image, model):
+    features = extract_hog_features(image).reshape(1, -1)
+    
+    # Use the model to predict
+    prediction = model.predict(features)  # Use the fitted model to predict
+    return "rebar" if prediction[0] == 1 else "non-rebar (outlier)"
 
 # Main function for the Streamlit app
 def run():
@@ -43,20 +39,9 @@ def run():
         img = Image.open(img_file)
         st.image(img, use_column_width=True)
 
-        # Save uploaded image to a temporary directory
-        upload_dir = './uploaded_images/'
-        if not os.path.exists(upload_dir):
-            os.makedirs(upload_dir)
-        save_image_path = os.path.join(upload_dir, img_file.name)
-        with open(save_image_path, "wb") as f:
-            f.write(img_file.getbuffer())
-
         if st.button("Predict"):
-            result = processed_img(save_image_path, model)
-            if result == "unknown":
-                st.error("Failed to classify the image.")
-            else:
-                st.success(f"The object in the image is classified as: {result}")
+            result = processed_img(np.array(img), model)  # Pass the image directly
+            st.success(f"The object in the image is classified as: {result}")
 
 if __name__ == "__main__":
     run()
