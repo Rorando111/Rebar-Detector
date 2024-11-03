@@ -1,23 +1,20 @@
 import streamlit as st
 import numpy as np
 import cv2
-import pickle
 import joblib
 from skimage.feature import hog
-from skimage import exposure
 from PIL import Image
 
-# Load the KNN model using pickle
+# Load the KNN model using joblib
 model_path = 'apps/OC-KNN/knn_model.joblib'
-with open(model_path, 'rb') as model_file:
-    model = joblib.load(model_file)
+model = joblib.load(model_path)
 
 # Function to extract HOG features from an image
 def extract_hog_features(image):
     image = cv2.resize(image, (128, 64))  # Ensure the same dimensions used during training
     gray_image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
     features, _ = hog(gray_image, orientations=9, pixels_per_cell=(8, 8),
-                       cells_per_block=(2, 2), visualize=True)
+                      cells_per_block=(2, 2), visualize=True)
     return features
 
 # Function to process and predict
@@ -25,11 +22,10 @@ def process_and_predict(img, model):
     image = np.array(img)
     if image is not None:
         features = extract_hog_features(image).reshape(1, -1)  # Extract HOG features
-        distances, _ = model.kneighbors(features)
-        avg_distance = np.mean(distances)
+        prediction = model.predict(features)
 
-        # Simple logic to classify based on distance
-        return "rebar" if avg_distance < 0.5 else "non-rebar (outlier)"
+        # Interpret prediction
+        return "rebar" if prediction[0] == 1 else "non-rebar (outlier)"
     return "unknown"
 
 # Main function for the Streamlit app
