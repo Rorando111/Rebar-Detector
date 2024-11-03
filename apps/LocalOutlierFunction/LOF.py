@@ -1,45 +1,44 @@
 import streamlit as st
 import numpy as np
 import cv2
-import pickle
+import joblib
 from skimage.feature import hog
 from PIL import Image
 
-# Load the LOF model using pickle
-model_path = 'apps/LocalOutlierFunction/lof_model.pkl'  # Update this path as necessary
+# Load the LOF model using joblib
+model_path = '/content/drive/MyDrive/Datasets/models/lof_model.joblib'  # Update this path as necessary
 
 try:
-    with open(model_path, 'rb') as model_file:
-        lof_model = pickle.load(model_file)
+    lof_model = joblib.load(model_path)
 except FileNotFoundError:
     st.error(f"Model file not found at {model_path}. Please ensure the model has been trained and saved.")
     st.stop()
 
 # Function to extract HOG features from an image
 def extract_hog_features(image):
-    image = cv2.resize(image, (128, 64))  # Ensure the same dimensions used during training
+    image = cv2.resize(image, (128, 64))
     gray_image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
     features, _ = hog(gray_image, orientations=9, pixels_per_cell=(8, 8),
-                       cells_per_block=(2, 2), visualize=True)
+                      cells_per_block=(2, 2), visualize=True)
     return features
 
 # Function to process and predict
 def process_and_predict(img, model):
     image = np.array(img)
     if image is not None:
-        features = extract_hog_features(image).reshape(1, -1)  # Extract HOG features
+        features = extract_hog_features(image).reshape(1, -1)
         
         # Use the LOF model to predict
-        prediction = model.fit_predict(features)  # Fit the model on the features to predict
+        prediction = model.predict(features)
         
         # Convert prediction to readable format
         if prediction[0] == 1:
-            return "rebar"
+            return "Rebar"
         elif prediction[0] == -1:
-            return "non-rebar (outlier)"
+            return "Non-Rebar"
         else:
-            return "unknown"
-    return "unknown"
+            return "Unknown"
+    return "Unknown"
 
 # Main function for the Streamlit app
 def run():
@@ -52,7 +51,7 @@ def run():
 
         if st.button("Predict"):
             result = process_and_predict(img, lof_model)
-            if result == "unknown":
+            if result == "Unknown":
                 st.error("Failed to classify the image.")
             else:
                 st.success(f"The object in the image is classified as: {result}")
