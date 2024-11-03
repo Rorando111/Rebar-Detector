@@ -5,6 +5,7 @@ import os
 import pickle  # For loading the model
 from skimage.feature import hog
 from PIL import Image
+import time
 
 # Load the model using pickle with error handling
 model_path = 'apps/SVM/ocsvm_model.pkl'  # Ensure this path is correct
@@ -34,7 +35,12 @@ def processed_img(img_path, model):
     if image is not None:
         features = extract_hog_features(image)  # Extract features
         try:
+            start_time = time.time()  # Start timing
             prediction = model.predict(features)
+            end_time = time.time()  # End timing
+            prediction_time = end_time - start_time
+            st.write(f"Prediction time: {prediction_time:.4f} seconds")  # Display time
+
             return "rebar" if prediction == 1 else "non-rebar"
         except Exception as e:
             st.error(f"Prediction error: {e}")
