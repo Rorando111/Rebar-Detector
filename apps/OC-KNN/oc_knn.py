@@ -2,6 +2,7 @@ import streamlit as st
 import numpy as np
 import cv2
 import pickle
+import joblib
 from skimage.feature import hog
 from skimage import exposure
 from PIL import Image
@@ -9,7 +10,7 @@ from PIL import Image
 # Load the KNN model using pickle
 model_path = 'apps/OC-KNN/one_class_knn_model (1).pkl'
 with open(model_path, 'rb') as model_file:
-    model = pickle.load(model_file)
+    model = joblib.load(model_file)
 
 # Function to extract HOG features from an image
 def extract_hog_features(image):
