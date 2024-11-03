@@ -42,7 +42,7 @@ def process_and_predict(img, model):
 
 # Main function for the Streamlit app
 def run():
-    st.title("Rebar Classification System")
+    st.title("Rebar Classification System Using Local Outlier Factor")
 
     img_file = st.file_uploader("Upload an Image for Classification", type=["jpg", "png", "jpeg"])
     if img_file is not None:
