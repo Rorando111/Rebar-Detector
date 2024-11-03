@@ -4,10 +4,9 @@ import cv2
 import pickle
 from skimage.feature import hog
 from PIL import Image
-from sklearn.neighbors import LocalOutlierFactor
 
 # Load the LOF model using pickle
-model_path = 'apps/LocalOutlierFunction/lof_model.pkl'  # Update this path as necessary
+model_path = '/content/drive/MyDrive/Datasets/models/lof_model.pkl'  # Update this path as necessary
 
 try:
     with open(model_path, 'rb') as model_file:
@@ -21,7 +20,7 @@ def extract_hog_features(image):
     image = cv2.resize(image, (128, 64))  # Ensure the same dimensions used during training
     gray_image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
     features, _ = hog(gray_image, orientations=9, pixels_per_cell=(8, 8),
-                       cells_per_block=(2, 2), visualize=True)
+                      cells_per_block=(2, 2), visualize=True)
     return features
 
 # Function to process and predict
@@ -31,20 +30,20 @@ def process_and_predict(img, model):
         features = extract_hog_features(image).reshape(1, -1)  # Extract HOG features
         
         # Use the LOF model to predict
-        prediction = model.predict(features)  # Fit the model on the features to predict
+        prediction = model.predict(features)  # Use predict instead of fit_predict
         
         # Convert prediction to readable format
         if prediction[0] == 1:
-            return "inlier (rebar)"
+            return "Rebar"
         elif prediction[0] == -1:
-            return "outlier (non-rebar)"
+            return "Non-Rebar"
         else:
-            return "unknown"
-    return "unknown"
+            return "Unknown"
+    return "Unknown"
 
 # Main function for the Streamlit app
 def run():
-    st.title("Rebar Classification System Using Local Outlier Factor")
+    st.title("Rebar Classification System")
 
     img_file = st.file_uploader("Upload an Image for Classification", type=["jpg", "png", "jpeg"])
     if img_file is not None:
@@ -53,7 +52,7 @@ def run():
 
         if st.button("Predict"):
             result = process_and_predict(img, lof_model)
-            if result == "unknown":
+            if result == "Unknown":
                 st.error("Failed to classify the image.")
             else:
                 st.success(f"The object in the image is classified as: {result}")
