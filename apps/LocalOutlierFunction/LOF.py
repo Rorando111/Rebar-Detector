@@ -6,7 +6,7 @@ from skimage.feature import hog
 from PIL import Image
 
 # Load the LOF model using joblib
-model_path = '/content/drive/MyDrive/Datasets/models/lof_model.joblib'  # Update this path as necessary
+model_path = 'apps/LocalOutlierFunction/lof_model.joblib'  # Update this path as necessary
 
 try:
     lof_model = joblib.load(model_path)
