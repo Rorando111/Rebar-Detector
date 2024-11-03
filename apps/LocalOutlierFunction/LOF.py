@@ -31,7 +31,7 @@ def process_and_predict(img, model):
         features = extract_hog_features(image).reshape(1, -1)  # Extract HOG features
         
         # Use the LOF model to predict
-        prediction = model.fit_predict(features)  # Fit the model on the features to predict
+        prediction = model.predict(features)  # Fit the model on the features to predict
         
         # Convert prediction to readable format
         if prediction[0] == 1:
