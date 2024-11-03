@@ -8,7 +8,7 @@ from skimage import exposure
 from PIL import Image
 
 # Load the KNN model using pickle
-model_path = 'apps/OC-KNN/one_class_knn_model (1).pkl'
+model_path = 'apps/OC-KNN/knn_model.joblib'
 with open(model_path, 'rb') as model_file:
     model = joblib.load(model_file)
 
