@@ -4,6 +4,7 @@ import cv2
 import pickle
 from skimage.feature import hog
 from PIL import Image
+from sklearn.neighbors import LocalOutlierFactor
 
 # Load the LOF model using pickle
 model_path = 'apps/LocalOutlierFunction/lof_model.pkl'  # Update this path as necessary
@@ -34,9 +35,9 @@ def process_and_predict(img, model):
         
         # Convert prediction to readable format
         if prediction[0] == 1:
-            return "rebar"
+            return "inlier (rebar)"
         elif prediction[0] == -1:
-            return "non-rebar (outlier)"
+            return "outlier (non-rebar)"
         else:
             return "unknown"
     return "unknown"
