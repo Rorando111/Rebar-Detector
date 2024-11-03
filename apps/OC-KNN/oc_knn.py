@@ -6,7 +6,7 @@ from skimage.feature import hog
 from PIL import Image
 
 # Load the KNN model using joblib
-model_path = '/content/drive/MyDrive/Datasets/models/knn_model.joblib'
+model_path = 'apps/OC-KNN/knn_model.joblib'
 model = joblib.load(model_path)
 
 # Function to extract HOG features from an image
