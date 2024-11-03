@@ -6,7 +6,7 @@ from skimage.feature import hog
 from PIL import Image
 
 # Load the KNN model using joblib
-model_path = 'apps/OC-KNN/knn_model.joblib'
+model_path = '/content/drive/MyDrive/Datasets/models/knn_model.joblib'
 model = joblib.load(model_path)
 
 # Function to extract HOG features from an image
@@ -25,8 +25,8 @@ def process_and_predict(img, model):
         prediction = model.predict(features)
 
         # Interpret prediction
-        return "rebar" if prediction[0] == 1 else "non-rebar (outlier)"
-    return "unknown"
+        return "Rebar" if prediction[0] == 1 else "Non-Rebar"
+    return "Unknown"
 
 # Main function for the Streamlit app
 def run():
@@ -35,11 +35,11 @@ def run():
     img_file = st.file_uploader("Upload an Image for Classification", type=["jpg", "png", "jpeg"])
     if img_file is not None:
         img = Image.open(img_file)
-        st.image(img, use_column_width=True)
+        st.image(img, caption='Uploaded Image', use_column_width=True)
 
         if st.button("Predict"):
             result = process_and_predict(img, model)
-            if result == "unknown":
+            if result == "Unknown":
                 st.error("Failed to classify the image.")
             else:
                 st.success(f"The object in the image is classified as: {result}")
