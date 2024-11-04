@@ -39,7 +39,6 @@ def processed_img(img_path, model):
             prediction = model.predict(features)
             end_time = time.time()  # End timing
             prediction_time = end_time - start_time
-            st.write(f"Prediction time: {prediction_time:.4f} seconds")  # Display time
 
             return "rebar" if prediction == 1 else "non-rebar"
         except Exception as e:
