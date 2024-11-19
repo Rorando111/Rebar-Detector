@@ -61,6 +61,7 @@ def run():
         if not os.path.exists(upload_dir):
             os.makedirs(upload_dir)
         save_image_path = os.path.join(upload_dir, img_file.name)
+
         with open(save_image_path, "wb") as f:
             f.write(img_file.getbuffer())
 
@@ -70,11 +71,7 @@ def run():
                 if result == "unknown":
                     st.error("Failed to classify the image.")
                 else:
-                    # Change background color based on result
-                    if result == "rebar":
-                        st.markdown(f'<div style="background-color:green; padding:10px; color:white; font-size:20px;">The object in the image is classified as: {result}</div>', unsafe_allow_html=True)
-                    else:
-                        st.markdown(f'<div style="background-color:red; padding:10px; color:white; font-size:20px;">The object in the image is classified as: {result}</div>', unsafe_allow_html=True)
+                    st.success(f"The object in the image is classified as: {result}")
             else:
                 st.error("Model is not loaded. Please check the model file.")
 
